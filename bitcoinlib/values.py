@@ -37,7 +37,8 @@ def value_to_satoshi(value, network=None):
         value = Value(value)
     if isinstance(value, Value):
         if network and value.network != network:
-            raise ValueError("Value uses different network (%s) then supplied network: %s" % (value.network.name, network))
+            raise ValueError(
+                "Value uses different network (%s) then supplied network: %s" % (value.network.name, network))
         value = value.value_sat
     return value
 
@@ -183,7 +184,7 @@ class Value:
 
     def __repr__(self):
         return "Value(value=%.14f, denominator=%.8f, network='%s')" % \
-               (self.value, self.denominator, self.network.name)
+            (self.value, self.denominator, self.network.name)
 
     def __int__(self):
         return int(self.value)
@@ -394,7 +395,7 @@ class Value:
         """
         return round(self.value / self.network.denominator)
 
-    def to_bytes(self, length=8, byteorder='little'):
+    def to_bytes(self, length=8, byteorder="little"):
         """
         Representation of value_sat (value in the smallest denominator: satoshi's) as bytes string. Used for script or transaction serialization.
 
@@ -404,7 +405,7 @@ class Value:
         :param length: Length of bytes string to return, default is 8 bytes
         :type length: int
         :param byteorder: Order of bytes: little or big endian. Default is 'little'
-        :type byteorder: str
+        :type byteorder: Literal["little", "big"]'
 
         :return bytes:
         """
@@ -420,7 +421,7 @@ class Value:
         :param length: Length of hexadecimal string to return, default is 16 characters
         :type length: int
         :param byteorder: Order of bytes: little or big endian. Default is 'little'
-        :type byteorder: str
+        :type byteorder: Literal["little", "big"]
         :return:
         """
         return self.value_sat.to_bytes(length // 2, byteorder).hex()

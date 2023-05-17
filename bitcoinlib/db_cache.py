@@ -17,11 +17,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from typing import Any
 
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, BigInteger, String, Boolean, ForeignKey, DateTime, Enum, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship, close_all_sessions
+from sqlalchemy.orm import sessionmaker, relationship, close_all_sessions, Relationship
 # try:
 #     import mysql.connector
 #     from parameterized import parameterized_class
@@ -36,12 +37,11 @@ from sqlalchemy.orm import sessionmaker, relationship, close_all_sessions
 from urllib.parse import urlparse
 from bitcoinlib.main import *
 
-
 _logger = logging.getLogger(__name__)
 try:
     dbcacheurl_obj = urlparse(DEFAULT_DATABASE_CACHE)
     if dbcacheurl_obj.netloc:
-        dbcacheurl = dbcacheurl_obj.netloc.replace(dbcacheurl_obj.password, 'xxx')
+        dbcacheurl = dbcacheurl_obj.netloc.replace(str(dbcacheurl_obj.password), 'xxx')
     else:
         dbcacheurl = dbcacheurl_obj.path
     _logger.info("Default Cache Database %s" % dbcacheurl)
@@ -62,6 +62,7 @@ class DbCache:
     Create new database if is doesn't exist yet
 
     """
+
     def __init__(self, db_uri=None):
         self.engine = None
         self.session = None
@@ -100,19 +101,20 @@ class DbCacheTransactionNode(Base):
     Link table for cache transactions and addresses
     """
     __tablename__ = 'cache_transactions_node'
-    txid = Column(LargeBinary(32), ForeignKey('cache_transactions.txid'), primary_key=True)
-    transaction = relationship("DbCacheTransaction", back_populates='nodes', doc="Related transaction object")
-    index_n = Column(Integer, primary_key=True, doc="Order of input/output in this transaction")
-    value = Column(BigInteger, default=0, doc="Value of transaction input")
-    address = Column(String(255), index=True, doc="Address string base32 or base58 encoded")
-    script = Column(LargeBinary, doc="Locking or unlocking script")
-    witnesses = Column(LargeBinary, doc="Witnesses (signatures) used in Segwit transaction inputs")
-    sequence = Column(BigInteger, default=0xffffffff,
-                      doc="Transaction sequence number. Used for timelock transaction inputs")
-    is_input = Column(Boolean, primary_key=True, doc="True if input, False if output")
-    spent = Column(Boolean, default=None, doc="Is output spent?")
-    ref_txid = Column(LargeBinary(32), index=True, doc="Transaction hash of input which spends this output")
-    ref_index_n = Column(BigInteger, doc="Index number of transaction input which spends this output")
+    txid: bytes = Column(LargeBinary(32), ForeignKey('cache_transactions.txid'), primary_key=True)
+    transaction: Relationship[Any] = relationship("DbCacheTransaction", back_populates='nodes',
+                                                  doc="Related transaction object")
+    index_n: int = Column(Integer, primary_key=True, doc="Order of input/output in this transaction")
+    value: int = Column(BigInteger, default=0, doc="Value of transaction input")
+    address: str = Column(String(255), index=True, doc="Address string base32 or base58 encoded")
+    script: bytes = Column(LargeBinary, doc="Locking or unlocking script")
+    witnesses: bytes = Column(LargeBinary, doc="Witnesses (signatures) used in Segwit transaction inputs")
+    sequence: int = Column(BigInteger, default=0xffffffff,
+                           doc="Transaction sequence number. Used for timelock transaction inputs")
+    is_input: bool = Column(Boolean, primary_key=True, doc="True if input, False if output")
+    spent: bool = Column(Boolean, default=None, doc="Is output spent?")
+    ref_txid: bytes = Column(LargeBinary(32), index=True, doc="Transaction hash of input which spends this output")
+    ref_index_n: int = Column(BigInteger, doc="Index number of transaction input which spends this output")
 
     def prev_txid(self):
         if self.is_input:
@@ -139,7 +141,8 @@ class DbCacheTransaction(Base):
 
     """
     __tablename__ = 'cache_transactions'
-    txid = Column(LargeBinary(32), primary_key=True, doc="Hexadecimal representation of transaction hash or transaction ID")
+    txid = Column(LargeBinary(32), primary_key=True,
+                  doc="Hexadecimal representation of transaction hash or transaction ID")
     date = Column(DateTime, doc="Date when transaction was confirmed and included in a block")
     version = Column(BigInteger, default=1,
                      doc="Tranaction version. Default is 1 but some wallets use another version number")

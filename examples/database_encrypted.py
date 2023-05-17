@@ -6,6 +6,7 @@
 #   db_password argument in the Wallet class
 
 import os
+from bitcoinlib.wallets import wallet_create_or_open
 
 # Method #1 - Set environment variable in code
 os.environ['DB_FIELD_ENCRYPTION_KEY'] = '11223344556677889900aabbccddeeff11223344556677889900aabbccddeeff'
@@ -17,10 +18,8 @@ os.environ['DB_FIELD_ENCRYPTION_KEY'] = '11223344556677889900aabbccddeeff1122334
 # pwd = input("Password? ")
 # os.environ['DB_FIELD_ENCRYPTION_KEY'] = hashlib.sha256(bytes(pwd, 'utf8')).hexdigest()
 
-from bitcoinlib.wallets import wallet_create_or_open
 
 wallet = wallet_create_or_open('wallet_private_keys_encrypted')
 wallet.new_key()
 wallet.info()
 print(wallet.main_key.wif)
-

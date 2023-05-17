@@ -20,14 +20,14 @@ from shutil import move
 from bitcoinlib.main import DEFAULT_DATABASE, BCL_DATABASE_DIR, BITCOINLIB_VERSION
 from bitcoinlib.db import Base, DbWallet, DbKey, DbKeyMultisigChildren, DbConfig
 
-
 print("Database should update automatically when using BitcoinLib. If automatic update fails you can run this script. "
       "!!! After everything is backuped !!!")
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='BitcoinLib Database update script')
     parser.add_argument('--database', '-d', default='sqlite:///' + DEFAULT_DATABASE,
-                        help="Name of specific database file to use",)
+                        help="Name of specific database file to use", )
     pa = parser.parse_args()
     return pa
 
@@ -46,7 +46,6 @@ print("Old database will be backed up to %s" % database_backup_file)
 if input("Type 'y' or 'Y' to continue or any other key to cancel: ") not in ['y', 'Y']:
     print("Aborted by user")
     sys.exit()
-
 
 # Move old database to temporary database
 move(database_file, database_backup_file)
@@ -70,7 +69,7 @@ try:
 
         # Update, rename
         try:
-            del(fields['balance'])
+            del (fields['balance'])
         except:
             pass
         if fields['scheme'] == 'bip44':
@@ -84,7 +83,7 @@ try:
         fields_copy = deepcopy(fields)
         for f in fields_copy:
             if f not in db_field_names:
-                del(fields[f])
+                del (fields[f])
 
         session.add(DbWallet(**fields))
     session.commit()
@@ -99,14 +98,14 @@ try:
                 fields['private'] = fields['key']
             else:
                 fields['public'] = fields['key']
-            del(fields['key'])
+            del (fields['key'])
 
         # Remove unused fields
         db_field_names = [field[0] for field in DbKey.__table__.columns.items()]
         fields_copy = deepcopy(fields)
         for f in fields_copy:
             if f not in db_field_names:
-                del(fields[f])
+                del (fields[f])
 
         fields['used'] = False  # To force rescan of all keys
         session.add(DbKey(**fields))

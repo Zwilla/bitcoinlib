@@ -71,7 +71,7 @@ if not wallet_exists(WALLET_NAME):
                 key_lists[w[0]].append(addkey)
 
     offline_wallet = Wallet.create(WALLET_NAME, key_lists['Offline PC'], sigs_required=SIGNATURES_REQUIRED,
-                                     witness_type=WITNESS_TYPE, network=NETWORK)
+                                   witness_type=WITNESS_TYPE, network=NETWORK)
     offline_wallet.new_key()
 
     print("\n\nA multisig wallet has been created on this system")
@@ -94,6 +94,7 @@ if not wallet_exists(WALLET_NAME):
     print("wlt.info()")
 else:
     from bitcoinlib.config.config import BITCOINLIB_VERSION, BCL_DATABASE_DIR
+
     online_wallet = Wallet(WALLET_NAME, db_uri=BCL_DATABASE_DIR + '/bitcoinlib.tmp.sqlite')
     online_wallet.utxos_update()
     online_wallet.info()
@@ -104,7 +105,8 @@ else:
         send_to_address = 'n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi'
         t = online_wallet.sweep(send_to_address, min_confirms=0)
         print(t.raw_hex())
-        print("Now copy-and-paste the raw transaction hex to your Offline PC and sign it there with a second signature:")
+        print(
+            "Now copy-and-paste the raw transaction hex to your Offline PC and sign it there with a second signature:")
         print("\nfrom bitcoinlib.wallets import Wallet")
         print("")
         print("wlt = Wallet('%s')" % WALLET_NAME)

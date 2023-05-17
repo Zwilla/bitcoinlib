@@ -40,7 +40,7 @@ class Mnemonic(object):
         
         """
         self._wordlist = []
-        with Path(BCL_INSTALL_DIR, 'wordlist', '%s.txt' % language).open() as f:
+        with Path(BCL_INSTALL_DIR, 'wordlist', '%s.txt' % language).open(encoding="utf-8") as f:
             self._wordlist = [w.strip() for w in f.readlines()]
 
     @staticmethod
@@ -233,7 +233,7 @@ class Mnemonic(object):
         language = self.detect_language(words)
         if isinstance(words, TYPE_TEXT):
             words = words.split(' ')
-        with Path(BCL_INSTALL_DIR, 'wordlist', '%s.txt' % language).open() as f:
+        with Path(BCL_INSTALL_DIR, 'wordlist', '%s.txt' % language).open(encoding="utf-8") as f:
             wordlist = [w.strip() for w in f.readlines()]
             for word in words:
                 if word not in wordlist:

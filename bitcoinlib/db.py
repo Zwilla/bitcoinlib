@@ -496,7 +496,7 @@ def db_update_version_id(db, version):
 def db_update(db, version_db, code_version=BITCOINLIB_VERSION):
     # Database changes from version 0.5+
     #
-    if version_db <= '0.6.3' and code_version > '0.6.3':
+    if version_db <= '0.6.3' < code_version:
         # Example: column = Column('latest_txid', String(32))
         column = Column('witnesses', LargeBinary, doc="Witnesses (signatures) used in Segwit transaction inputs")
         add_column(db.engine, 'transaction_inputs', column)

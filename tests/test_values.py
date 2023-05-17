@@ -102,7 +102,7 @@ class TestValue(unittest.TestCase):
         self.assertEqual(Value('0.00021 YBTC').str(1), '210000000000000000000.00000000 BTC')
         self.assertEqual(Value('127127504620 Doge').str('TDoge'), '0.12712750 TDOGE')
         self.assertRaisesRegex(ValueError, "Denominator not found in NETWORK_DENOMINATORS definition",
-                                Value('123 Dash').str, 'DD')
+                               Value('123 Dash').str, 'DD')
 
     def test_value_class_str_auto(self):
         self.assertEqual(Value('1000000 sat').str('auto'), '0.01000000 BTC')

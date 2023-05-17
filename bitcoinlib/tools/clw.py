@@ -19,10 +19,10 @@ from bitcoinlib.main import BITCOINLIB_VERSION
 
 try:
     import pyqrcode
+
     QRCODES_AVAILABLE = True
 except ImportError:
     QRCODES_AVAILABLE = False
-
 
 DEFAULT_NETWORK = 'bitcoin'
 
@@ -53,7 +53,7 @@ def parse_args():
                                    "specific cosigner. Default is -1 for own wallet",
                               const=-1, metavar='COSIGNER_ID')
     group_wallet.add_argument('--generate-key', '-g', action='store_true', help="Generate a new masterkey, and show"
-                              " passphrase, WIF and public account key. Can be used to create a multisig wallet")
+                                                                                " passphrase, WIF and public account key. Can be used to create a multisig wallet")
     group_wallet.add_argument('--export-private', '-e', action='store_true',
                               help="Export private key for this wallet and exit")
     group_wallet.add_argument('--import-private', '-k',
@@ -68,7 +68,7 @@ def parse_args():
     group_wallet2.add_argument('--network', '-n',
                                help="Specify 'bitcoin', 'litecoin', 'testnet' or other supported network")
     group_wallet2.add_argument('--database', '-d',
-                               help="URI of the database to use",)
+                               help="URI of the database to use", )
     group_wallet2.add_argument('--create-from-key', '-c', metavar='KEY',
                                help="Create a new wallet from specified key")
     group_wallet2.add_argument('--create-multisig', '-m', nargs='*',
@@ -89,7 +89,7 @@ def parse_args():
     group_transaction = parser.add_argument_group("Transactions")
     group_transaction.add_argument('--create-transaction', '-t', metavar=('ADDRESS_1', 'AMOUNT_1'),
                                    help="Create transaction. Specify address followed by amount. Repeat for multiple "
-                                   "outputs", nargs='*')
+                                        "outputs", nargs='*')
     group_transaction.add_argument('--sweep', metavar="ADDRESS",
                                    help="Sweep wallet, transfer all funds to specified address")
     group_transaction.add_argument('--fee', '-f', type=int, help="Transaction fee")
@@ -129,6 +129,8 @@ def create_wallet(wallet_name, args, db_uri):
         args.network = DEFAULT_NETWORK
     print("\nCREATE wallet '%s' (%s network)" % (wallet_name, args.network))
     if args.create_multisig:
+        sigs_total = -1
+        sigs_required = -1
         if not isinstance(args.create_multisig, list) or len(args.create_multisig) < 2:
             clw_exit("Please enter multisig creation parameter in the following format: "
                      "<number-of-signatures> <number-of-signatures-required> "
@@ -145,7 +147,7 @@ def create_wallet(wallet_name, args, db_uri):
                      args.create_multisig[1])
         key_list = args.create_multisig[2:]
         keys_missing = sigs_total - len(key_list)
-        assert(keys_missing >= 0)
+        assert (keys_missing >= 0)
         if keys_missing:
             print("Not all keys provided, creating %d additional key(s)" % keys_missing)
             for _ in range(keys_missing):
@@ -180,11 +182,12 @@ def create_wallet(wallet_name, args, db_uri):
         seed = Mnemonic().to_seed(passphrase).hex()
         hdkey = HDKey.from_seed(seed, network=args.network)
         return Wallet.create(wallet_name, hdkey, network=args.network, witness_type=args.witness_type,
-                               db_uri=db_uri)
+                             db_uri=db_uri)
 
 
 def create_transaction(wlt, send_args, args):
     output_arr = []
+    amount = 0
     while send_args:
         if len(send_args) == 1:
             raise ValueError("Invalid number of transaction input use <address1> <amount1> ... <address_n> <amount_n>")
@@ -263,7 +266,7 @@ def main():
     if args.wallet_name and not args.wallet_name.isdigit() and not wallet_exists(args.wallet_name,
                                                                                  db_uri=db_uri):
         if not args.create_from_key and input(
-                    "Wallet %s does not exist, create new wallet [yN]? " % args.wallet_name).lower() != 'y':
+                "Wallet %s does not exist, create new wallet [yN]? " % args.wallet_name).lower() != 'y':
             clw_exit('Aborted')
         wlt = create_wallet(args.wallet_name, args, db_uri)
         args.wallet_info = True
@@ -353,7 +356,7 @@ def main():
         else:
             print("Install qr code module to show QR codes: pip install pyqrcode")
         clw_exit()
-    if args.create_transaction == []:
+    if not args.create_transaction:
         clw_exit("Missing arguments for --create-transaction/-t option")
     if args.create_transaction:
         if args.fee_per_kb:

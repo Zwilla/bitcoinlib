@@ -105,26 +105,26 @@ class TestTransactionInputs(unittest.TestCase):
 
     # TODO: Move and rewrite
     # def test_transaction_input_locktime(self):
-        # rawtx = '0200000002f42e4ee59d33dffc39978bd6f7a1fdef42214b7de7d6d2716b2a5ae0a92fbb09000000006a473044' \
-        #         '022003ea734e54ddc00d4d681e2cac9ecbedb45d24af307aefbc55ecb005c5d2dc13022054d5a0fdb7a0c3ae7b' \
-        #         '161ffb654be7e89c84de06013d416f708f85afe11845a601210213692eb7eb74a0f86284890885629f2d097733' \
-        #         '7376868b033029ba49cc64765dfdffffff27a321a0e098276e3dce7aedf33a633db31bf34262bde3fe30106a32' \
-        #         '7696a70a000000006a47304402207758c05e849310af174ad4d484cdd551d66244d4cf0b5bba84e94d59eb8d3c' \
-        #         '9b02203e005ef10ede62db1900ed0bc2c72c7edd83ef98a21a3c567b4c6defe8ffca06012103ab51db28d30d3a' \
-        #         'c99965a5405c3d473e25dff6447db1368e9191229d6ec0b635fdffffff029b040000000000001976a91406d66a' \
-        #         'dea8ca6fcbb4a7a5f18458195c869f4b5488ac307500000000000017a9140614a615ee10d84a1e6d85ec1ff7ff' \
-        #         'f527757d5987ffffffff'
-        # t = Transaction.parse_hex(rawtx)
-        # t.inputs[0].set_locktime_relative_time(1000)
-        # self.assertEqual(t.inputs[0].sequence, 4194305)
-        # t.inputs[0].set_locktime_relative_time(0)
-        # self.assertEqual(t.inputs[0].sequence, 0xffffffff)
-        # t.inputs[0].set_locktime_relative_time(100)
-        # self.assertEqual(t.inputs[0].sequence, 4194305)
-        # t.inputs[0].set_locktime_relative_blocks(120)
-        # self.assertEqual(t.inputs[0].sequence, 120)
-        # t.inputs[0].set_locktime_relative_blocks(0)
-        # self.assertEqual(t.inputs[0].sequence, 0xffffffff)
+    # rawtx = '0200000002f42e4ee59d33dffc39978bd6f7a1fdef42214b7de7d6d2716b2a5ae0a92fbb09000000006a473044' \
+    #         '022003ea734e54ddc00d4d681e2cac9ecbedb45d24af307aefbc55ecb005c5d2dc13022054d5a0fdb7a0c3ae7b' \
+    #         '161ffb654be7e89c84de06013d416f708f85afe11845a601210213692eb7eb74a0f86284890885629f2d097733' \
+    #         '7376868b033029ba49cc64765dfdffffff27a321a0e098276e3dce7aedf33a633db31bf34262bde3fe30106a32' \
+    #         '7696a70a000000006a47304402207758c05e849310af174ad4d484cdd551d66244d4cf0b5bba84e94d59eb8d3c' \
+    #         '9b02203e005ef10ede62db1900ed0bc2c72c7edd83ef98a21a3c567b4c6defe8ffca06012103ab51db28d30d3a' \
+    #         'c99965a5405c3d473e25dff6447db1368e9191229d6ec0b635fdffffff029b040000000000001976a91406d66a' \
+    #         'dea8ca6fcbb4a7a5f18458195c869f4b5488ac307500000000000017a9140614a615ee10d84a1e6d85ec1ff7ff' \
+    #         'f527757d5987ffffffff'
+    # t = Transaction.parse_hex(rawtx)
+    # t.inputs[0].set_locktime_relative_time(1000)
+    # self.assertEqual(t.inputs[0].sequence, 4194305)
+    # t.inputs[0].set_locktime_relative_time(0)
+    # self.assertEqual(t.inputs[0].sequence, 0xffffffff)
+    # t.inputs[0].set_locktime_relative_time(100)
+    # self.assertEqual(t.inputs[0].sequence, 4194305)
+    # t.inputs[0].set_locktime_relative_blocks(120)
+    # self.assertEqual(t.inputs[0].sequence, 120)
+    # t.inputs[0].set_locktime_relative_blocks(0)
+    # self.assertEqual(t.inputs[0].sequence, 0xffffffff)
 
 
 class TestTransactionOutputs(unittest.TestCase):
@@ -213,9 +213,9 @@ class TestTransactions(unittest.TestCase):
 
     def test_transactions_deserialize_errors(self):
         rawtx = '01000000000102c114c54564ea09b33c73bfd0237a4d283fe9e73285ad6d34fd3fa42c99f194640300000000ffffffff'
-        self.assertRaisesRegexp(TransactionError,
-                                'Input transaction hash not found. Probably malformed raw transaction',
-                                Transaction.parse_hex, rawtx)
+        self.assertRaisesRegex(TransactionError,
+                               'Input transaction hash not found. Probably malformed raw transaction',
+                               Transaction.parse_hex, rawtx)
         # FIXME: tx.parse_hex() should check remaining size
         # rawtx = '01000000000101c114c54564ea09b33c73bfd0237a4d283fe9e73285ad6d34fd3fa42c99f194640300000000ffffffff0200' \
         #         'e1f5050000000017a914e10a445f3084bd131394c66bf0023653dcc247ab877cdb3b0300000000220020701a8d401c84fb13' \
@@ -225,7 +225,7 @@ class TestTransactions(unittest.TestCase):
         #         '3c12b67ddd3cf8127fe054dec971c858252c004bf8016952210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea36' \
         #         '8e0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8cac749a0e53d70eff01874496feff2103c96d495bfdd5' \
         #         'ba4145e3e046fee45e84a8a48ad05bd8dbb395c011a32cf9f88053ae000000'
-        # self.assertRaisesRegexp(TransactionError,
+        # self.assertRaisesRegex(TransactionError,
         #                         'Error when deserializing raw transaction, bytes left for locktime must be 4 not 3',
         #                         Transaction.parse, rawtx)
         # rawtx = '01000000000101c114c54564ea09b33c73bfd0237a4d283fe9e73285ad6d34fd3fa42c99f194640300000000ffffffff0200' \
@@ -236,7 +236,7 @@ class TestTransactions(unittest.TestCase):
         #         '3c12b67ddd3cf8127fe054dec971c858252c004bf8016952210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea36' \
         #         '8e0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8cac749a0e53d70f01874496feff2103c96d495bfdd5' \
         #         'ba4145e3e046fee45e84a8a48ad05bd8dbb395c011a32cf9f88053ae00000000'
-        # self.assertRaisesRegexp(TransactionError,
+        # self.assertRaisesRegex(TransactionError,
         #                         "Error when deserializing raw transaction, bytes left for locktime must be 4 not 3",
         #                         Transaction.parse, rawtx)
 
@@ -1029,8 +1029,8 @@ class TestTransactions(unittest.TestCase):
 
     def test_transaction_sendto_wrong_address(self):
         t = Transaction(network='bitcoin')
-        self.assertRaisesRegexp(BKeyError, 'Network bitcoin not found in extracted networks*',
-                                t.add_output, 100000, 'LTK1nK5TyGALmSup5SzhgkX1cnVQrC4cLd')
+        self.assertRaisesRegex(BKeyError, 'Network bitcoin not found in extracted networks*',
+                               t.add_output, 100000, 'LTK1nK5TyGALmSup5SzhgkX1cnVQrC4cLd')
 
     def test_transaction_create_with_address_objects(self):
         ki = Key('5HusYj2b2x4nroApgfvaSfKYZhRbKFH41bVyPooymbC6KfgSXdD', compressed=False)
@@ -1052,8 +1052,8 @@ class TestTransactions(unittest.TestCase):
         self.assertIsNone(t.info())
 
     def test_transaction_errors(self):
-        self.assertRaisesRegexp(TransactionError, "Please specify a valid witness type: legacy or segwit",
-                                Transaction, witness_type='error')
+        self.assertRaisesRegex(TransactionError, "Please specify a valid witness type: legacy or segwit",
+                               Transaction, witness_type='error')
 
 
 class TestTransactionsScripts(unittest.TestCase, CustomAssertions):
@@ -1063,15 +1063,15 @@ class TestTransactionsScripts(unittest.TestCase, CustomAssertions):
         keys = []
         for n in range(20):
             keys.append(HDKey().public_hex)
-        self.assertRaisesRegexp(TransactionError, exp_error, serialize_multisig_redeemscript, keys)
+        self.assertRaisesRegex(TransactionError, exp_error, serialize_multisig_redeemscript, keys)
 
     def test_transaction_script_type_string(self):
         # Locking script
         s = bytes.fromhex('5121032487c2a32f7c8d57d2a93906a6457afd00697925b0e6e145d89af6d3bca330162102308673d169'
                           '87eaa010e540901cc6fe3695e758c19f46ce604e174dac315e685a52ae')
-        os = "OP_1 032487c2a32f7c8d57d2a93906a6457afd00697925b0e6e145d89af6d3bca33016 " \
-             "02308673d16987eaa010e540901cc6fe3695e758c19f46ce604e174dac315e685a OP_2 OP_CHECKMULTISIG"
-        self.assertEqual(os, str(script_to_string(s)))
+        os_op1 = "OP_1 032487c2a32f7c8d57d2a93906a6457afd00697925b0e6e145d89af6d3bca33016 " \
+                 "02308673d16987eaa010e540901cc6fe3695e758c19f46ce604e174dac315e685a OP_2 OP_CHECKMULTISIG"
+        self.assertEqual(os_op1, str(script_to_string(s)))
         # Signature unlocking script
         sig = '304402203359857b3bc3409c161a3b9570306bde53f21a15fcf3d3946d8ddfc94dd6ff35022024dc076c7014ee199831079cc0f' \
               'df5e55aeebee7e90f4d51a2d923cc57f9173a01'
@@ -1178,8 +1178,8 @@ class TestTransactionsScripts(unittest.TestCase, CustomAssertions):
 
     def test_transaction_get_unlocking_script_type(self):
         self.assertEqual(get_unlocking_script_type('p2pk'), 'signature')
-        self.assertRaisesRegexp(TransactionError, "Unknown locking script type troep", get_unlocking_script_type,
-                                'troep')
+        self.assertRaisesRegex(TransactionError, "Unknown locking script type troep", get_unlocking_script_type,
+                               'troep')
 
     def test_transaction_equal(self):
         raw_hex = "01000000015eb87f13120dcf5efd3bd31e02fb95e96144f47d0a8cc37fc85c0ea84bebd4a8000000006a473044" \

@@ -3,3 +3,13 @@ fastecdsa>=2.2.1
 SQLAlchemy>=1.4.24
 numpy>=1.22.0
 pycryptodome>=3.14.1
+crypto==1.4.1
+bitcoinlib~=0.6.10
+setuptools==67.7.2
+ecdsa~=0.18.0
+pyqrcode==1.2.1
+mysql-connector-python~=8.0.33
+psycopg2~=2.9.6
+parameterized~=0.9.0
+scrypt~=0.8.20
+pyscrypt==1.6.2

@@ -73,7 +73,8 @@ def check_network_and_key(key, network=None, kf_networks=None, default_network=D
     :type key: str, int, bytes
     :param network: Optional network. Method raises BKeyError if keys belongs to another network
     :type network: str, None
-    :param kf_networks: Optional list of networks which is returned by get_key_format. If left empty the get_key_format function will be called.
+    :param kf_networks: Optional list of networks which is returned by get_key_format.
+    If left empty the get_key_format function will be called.
     :type kf_networks: list, None
     :param default_network: Specify different default network, leave empty for default (bitcoin)
     :type default_network: str, None
