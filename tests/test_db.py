@@ -26,7 +26,6 @@ from bitcoinlib.db_cache import *
 from bitcoinlib.wallets import Wallet, WalletError
 from bitcoinlib.services.services import Service
 
-
 DATABASEFILE_UNITTESTS = os.path.join(str(BCL_DATABASE_DIR), 'bitcoinlib.unittest.sqlite')
 DATABASEFILE_TMP = os.path.join(str(BCL_DATABASE_DIR), 'bitcoinlib.tmp.sqlite')
 DATABASEFILE_CACHE_TMP = os.path.join(str(BCL_DATABASE_DIR), 'bitcoinlib_cache.tmp.sqlite')
@@ -55,7 +54,7 @@ class TestDb(unittest.TestCase):
         dbtmp = Db(DATABASEFILE_TMP)
         Wallet.create("tmpwallet", db_uri=DATABASEFILE_TMP)
         self.assertRaisesRegex(WalletError, "Wallet with name 'tmpwallet' already exists",
-                                Wallet.create, 'tmpwallet', db_uri=DATABASEFILE_TMP)
+                               Wallet.create, 'tmpwallet', db_uri=DATABASEFILE_TMP)
         dbtmp.drop_db(yes_i_am_sure=True)
         Wallet.create("tmpwallet", db_uri=DATABASEFILE_TMP)
 

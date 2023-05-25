@@ -69,9 +69,9 @@ class TestKeyClasses(unittest.TestCase):
         self.assertListEqual(path_expand([99], witness_type='p2sh-segwit', multisig=True),
                              ['m', "48'", "0'", "0'", "1'", '0', '99'])
         self.assertRaisesRegex(BKeyError, "Invalid path provided. Path should be shorter than 6 items.",
-                                path_expand, [0, 1, 2, 3, 4, 5, 6])
+                               path_expand, [0, 1, 2, 3, 4, 5, 6])
         self.assertRaisesRegex(BKeyError, "Please provide path as list with at least 1 item",
-                                path_expand, 5)
+                               path_expand, 5)
 
 
 class TestGetKeyFormat(unittest.TestCase):
@@ -111,7 +111,7 @@ class TestGetKeyFormat(unittest.TestCase):
     def test_format_key_exceptions(self):
         self.assertRaisesRegex(BKeyError, "Key empty, please specify a valid key", get_key_format, '')
         self.assertRaisesRegex(BKeyError, "Attribute 'is_private' must be False or True", get_key_format,
-                                '666368e477a8ddd46808c527cc3c506719bb3f52a927b6c13532984b714b56ad', 3)
+                               '666368e477a8ddd46808c527cc3c506719bb3f52a927b6c13532984b714b56ad', 3)
 
 
 class TestPrivateKeyConversions(unittest.TestCase):
@@ -185,11 +185,11 @@ class TestPrivateKeyImport(unittest.TestCase):
 
     def test_private_key_import_error_1(self):
         self.assertRaisesRegex(BKeyError, "Invalid checksum, not a valid WIF key",
-                                Key, 'L1odb1uUozbfK2NrsMyhJfvRsxGM2axixgPL8vG9BUBnE6W1VyTX')
+                               Key, 'L1odb1uUozbfK2NrsMyhJfvRsxGM2axixgPL8vG9BUBnE6W1VyTX')
 
     def test_private_key_import_error_2(self):
         self.assertRaisesRegex(BKeyError, "Unrecognised key format",
-                                Key, 'M1odb1uUozbfK2NrsMyhJfvRsxGM2AxixgPL8vG9BUBnE6W1VyTX')
+                               Key, 'M1odb1uUozbfK2NrsMyhJfvRsxGM2AxixgPL8vG9BUBnE6W1VyTX')
 
     def test_private_key_import_testnet(self):
         self.k = Key('92Pg46rUhgTT7romnV7iGW6W1gbGdeezqdbJCzShkCsYNzyyNcc', 'testnet')
@@ -238,7 +238,7 @@ class TestPublicKeyConversion(unittest.TestCase):
 
     def test_public_key_import_error(self):
         self.assertRaisesRegex(BKeyError, "Unrecognised key format",
-                                Key, '064781e448a7ff0e1b66f1a249b4c952dae33326cf57c0a643738886f4efcd14d5')
+                               Key, '064781e448a7ff0e1b66f1a249b4c952dae33326cf57c0a643738886f4efcd14d5')
 
     def test_litecoin_private_key(self):
         KC_LTC = Key('0bc295d0b20b0e2ff6ab2c4982583d4f84936a17689aaca031a803dcf4a3b139', network='litecoin')
@@ -452,7 +452,7 @@ class TestHDKeysChildKeyDerivation(unittest.TestCase):
         k0 = HDKey()
         k1 = k0.child_private(10, hardened=True)
         self.assertRaisesRegex(BKeyError, "Cannot derive hardened key from public private key",
-                                k1.child_public, 2147483659)
+                               k1.child_public, 2147483659)
 
 
 class TestHDKeysPublicChildKeyDerivation(unittest.TestCase):
@@ -655,18 +655,18 @@ class TestKeysAddress(unittest.TestCase):
 
     def test_keys_address_deserialize_exceptions(self):
         self.assertRaisesRegex(BKeyError, "Invalid address 17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bb, checksum incorrect",
-                                deserialize_address, '17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bb', encoding='base58')
+                               deserialize_address, '17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bb', encoding='base58')
         self.assertRaisesRegex(EncodingError,
-                                "Address 17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bd is not in specified encoding bs",
-                                deserialize_address, '17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bd', encoding='bs')
+                               "Address 17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bd is not in specified encoding bs",
+                               deserialize_address, '17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bd', encoding='bs')
         self.assertRaisesRegex(EncodingError,
-                                "Invalid address 17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bb: "
-                                "Invalid bech32 character in bech string",
-                                deserialize_address, '17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bb', encoding='bech32')
+                               "Invalid address 17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bb: "
+                               "Invalid bech32 character in bech string",
+                               deserialize_address, '17N9VQbP89ThunSq7Yo2VooXCFTW1Lp8bb', encoding='bech32')
         self.assertRaisesRegex(EncodingError,
-                                "Address bc1qk077yl8zf6yty25rgrys8h40j8adun267y3m44 is not in specified "
-                                "encoding base58",
-                                deserialize_address, 'bc1qk077yl8zf6yty25rgrys8h40j8adun267y3m44', encoding='base58')
+                               "Address bc1qk077yl8zf6yty25rgrys8h40j8adun267y3m44 is not in specified "
+                               "encoding base58",
+                               deserialize_address, 'bc1qk077yl8zf6yty25rgrys8h40j8adun267y3m44', encoding='base58')
 
     def test_keys_address_deserialize_litecoin(self):
         address = '3N59KFZBzpnq4EoXo2cDn2GKjX1dfkv1nB'
@@ -814,12 +814,12 @@ class TestKeysSignatures(unittest.TestCase):
              '3044022040aa86a597ecd19aa60c1f18390543cc5c38049a18a8515aed095a4b15e1d8ea02202226efba29871477ab925e753'
              '56fda036f06d293d02fc9b0f9d49e09d8149e9d')
         ]
-        sig_method1 = sign(sig_tests[0][0], sig_tests[0][1], k=sig_tests[0][2])
+        sig_method1 = sign(sig_tests[0][0], sig_tests[0][1], k=int(sig_tests[0][2]))
         self.assertEqual(sig_method1.hex(), sig_tests[0][3])
         self.assertEqual(sig_method1.as_der_encoded(include_hash_type=False).hex(), sig_tests[0][4])
         count = 0
         for case in sig_tests:
-            sig = Signature.create(case[0], case[1], k=case[2])
+            sig = Signature.create(case[0], case[1], k=int(case[2]))
             self.assertEqual(sig.hex(), case[3], msg="Error in #%d: %s != %s" % (count, sig.hex(), case[3]))
             self.assertEqual(sig.as_der_encoded(include_hash_type=False).hex(), case[4])
             self.assertTrue(sig.verify())
@@ -919,11 +919,11 @@ class TestKeysSignatures(unittest.TestCase):
     def test_signatures_rs_out_of_curve(self):
         outofcurveint = 115792089237316195423570985008687907852837564279074904382605163141518161494339
         self.assertRaisesRegex(BKeyError, "r is not a positive integer smaller than the curve order",
-                                Signature, outofcurveint, 10)
+                               Signature, outofcurveint, 10)
         self.assertRaisesRegex(BKeyError, "r is not a positive integer smaller than the curve order",
-                                Signature, 0, 10)
+                               Signature, 0, 10)
         self.assertRaisesRegex(BKeyError, "s is not a positive integer smaller than the curve order",
-                                Signature, 11, outofcurveint)
+                               Signature, 11, outofcurveint)
 
     def test_signatures_dunder(self):
         sig1 = Signature.parse_hex('3045022100c949a465a057f3ca7d20e80511e93d0be21e3efbeb8720ca3e0adfbce6883d0a022070b'

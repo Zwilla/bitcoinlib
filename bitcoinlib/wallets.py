@@ -42,6 +42,7 @@ class WalletError(Exception):
     Handle Wallet class Exceptions
 
     """
+
     def __init__(self, msg=''):
         self.msg = msg
         _logger.error(msg)
@@ -374,14 +375,14 @@ class WalletKey(object):
         script_type = script_type_default(witness_type, multisig)
 
         if not key_is_address:
-            keyexists = session.query(DbKey).\
+            keyexists = session.query(DbKey). \
                 filter(DbKey.wallet_id == wallet_id,
                        DbKey.wif == k.wif(witness_type=witness_type, multisig=multisig, is_private=True)).first()
             if keyexists:
                 _logger.warning("Key already exists in this wallet. Key ID: %d" % keyexists.id)
                 return WalletKey(keyexists.id, session, k)
 
-            if key_type != 'single' and k.depth != len(path.split('/'))-1:
+            if key_type != 'single' and k.depth != len(path.split('/')) - 1:
                 if path == 'm' and k.depth > 1:
                     path = "M"
 
@@ -400,13 +401,14 @@ class WalletKey(object):
                 session.commit()
                 return WalletKey(wk.id, session, k)
 
-            nk = DbKey(name=name[:80], wallet_id=wallet_id, public=k.public_byte, private=k.private_byte, purpose=purpose,
+            nk = DbKey(name=name[:80], wallet_id=wallet_id, public=k.public_byte, private=k.private_byte,
+                       purpose=purpose,
                        account_id=account_id, depth=k.depth, change=change, address_index=k.child_index,
                        wif=k.wif(witness_type=witness_type, multisig=multisig, is_private=True), address=address,
                        parent_id=parent_id, compressed=k.compressed, is_private=k.is_private, path=path,
                        key_type=key_type, network_name=network, encoding=encoding, cosigner_id=cosigner_id)
         else:
-            keyexists = session.query(DbKey).\
+            keyexists = session.query(DbKey). \
                 filter(DbKey.wallet_id == wallet_id,
                        DbKey.address == k.address).first()
             if keyexists:
@@ -448,8 +450,8 @@ class WalletKey(object):
             self._dbkey = wk
             self._hdkey_object = hdkey_object
             if hdkey_object and isinstance(hdkey_object, HDKey):
-                assert(not wk.public or wk.public == hdkey_object.public_byte)
-                assert(not wk.private or wk.private == hdkey_object.private_byte)
+                assert (not wk.public or wk.public == hdkey_object.public_byte)
+                assert (not wk.private or wk.private == hdkey_object.private_byte)
                 self._hdkey_object = hdkey_object
             self.key_id = key_id
             self._name = wk.name
@@ -518,7 +520,8 @@ class WalletKey(object):
         if self.key_type == 'multisig':
             self._hdkey_object = []
             for kc in self._dbkey.multisig_children:
-                self._hdkey_object.append(HDKey.from_wif(kc.child_key.wif, network=kc.child_key.network_name, compressed=self.compressed))
+                self._hdkey_object.append(
+                    HDKey.from_wif(kc.child_key.wif, network=kc.child_key.network_name, compressed=self.compressed))
         if self._hdkey_object is None and self.wif:
             self._hdkey_object = HDKey.from_wif(self.wif, network=self.network_name, compressed=self.compressed)
         return self._hdkey_object
@@ -570,7 +573,7 @@ class WalletKey(object):
             'is_private': self.is_private,
             'name': self.name,
             'key_public': '' if not self.key_public else self.key_public.hex(),
-            'account_id':  self.account_id,
+            'account_id': self.account_id,
             'parent_id': self.parent_id,
             'depth': self.depth,
             'change': self.change,
@@ -629,7 +632,7 @@ class WalletTransaction(Transaction):
 
     def __repr__(self):
         return "<WalletTransaction(input_count=%d, output_count=%d, status=%s, network=%s)>" % \
-               (len(self.inputs), len(self.outputs), self.status, self.network.name)
+            (len(self.inputs), len(self.outputs), self.status, self.network.name)
 
     def __deepcopy__(self, memo):
         cls = self.__class__
@@ -819,7 +822,7 @@ class WalletTransaction(Transaction):
             # Update db: Update spent UTXO's, add transaction to database
             for inp in self.inputs:
                 txid = inp.prev_txid
-                utxos = self.hdwallet._session.query(DbTransactionOutput).join(DbTransaction).\
+                utxos = self.hdwallet._session.query(DbTransactionOutput).join(DbTransaction). \
                     filter(DbTransaction.txid == txid,
                            DbTransactionOutput.output_n == inp.output_n_int,
                            DbTransactionOutput.spent.is_(False)).all()
@@ -901,7 +904,7 @@ class WalletTransaction(Transaction):
 
             self.hdwallet._commit()
         for to in self.outputs:
-            tx_key = sess.query(DbKey).\
+            tx_key = sess.query(DbKey). \
                 filter_by(wallet_id=self.hdwallet.wallet_id, address=to.address).scalar()
             key_id = None
             if tx_key:
@@ -1054,7 +1057,7 @@ class Wallet(object):
                         raise WalletError("Depth of provided public master key %d does not correspond with key path "
                                           "%s. Did you provide correct witness_type and multisig attribute?" %
                                           (key.depth, key_path))
-                key_path = ['M'] + key_path[key.depth+1:]
+                key_path = ['M'] + key_path[key.depth + 1:]
                 base_path = 'M'
 
         if isinstance(key_path, list):
@@ -1372,7 +1375,7 @@ class Wallet(object):
             self.main_key = None
             self._default_account_id = db_wlt.default_account_id
             self.multisig_n_required = db_wlt.multisig_n_required
-            co_sign_wallets = self._session.query(DbWallet).\
+            co_sign_wallets = self._session.query(DbWallet). \
                 filter(DbWallet.parent_id == self.wallet_id).order_by(DbWallet.name).all()
             self.cosigner = [Wallet(w.id, db_uri=db_uri, db_cache_uri=db_cache_uri) for w in co_sign_wallets]
             self.sort_keys = db_wlt.sort_keys
@@ -1426,7 +1429,7 @@ class Wallet(object):
         if DEFAULT_DATABASE in db_uri:
             return "<Wallet(name=\"%s\")>" % self.name
         return "<Wallet(name=\"%s\", db_uri=\"%s\")>" % \
-               (self.name, db_uri)
+            (self.name, db_uri)
 
     def __str__(self):
         return self.name
@@ -1454,7 +1457,7 @@ class Wallet(object):
             network = self.network.name
         if account_id is None and network == self.network.name:
             account_id = self.default_account_id
-        qr = self._session.query(DbKey).\
+        qr = self._session.query(DbKey). \
             filter_by(wallet_id=self.wallet_id, purpose=self.purpose, depth=self.depth_public_master,
                       network_name=network)
         if account_id is not None:
@@ -1503,7 +1506,7 @@ class Wallet(object):
         """
 
         self._owner = value
-        self._dbwallet = self._session.query(DbWallet).filter(DbWallet.id == self.wallet_id).\
+        self._dbwallet = self._session.query(DbWallet).filter(DbWallet.id == self.wallet_id). \
             update({DbWallet.owner: value})
         self._commit()
 
@@ -1538,7 +1541,7 @@ class Wallet(object):
         if not isinstance(network, Network):
             network = Network(network)
         self.network = network
-        self._session.query(DbWallet).filter(DbWallet.id == self.wallet_id).\
+        self._session.query(DbWallet).filter(DbWallet.id == self.wallet_id). \
             update({DbWallet.network_name: network.name})
         self._commit()
 
@@ -1585,13 +1588,13 @@ class Wallet(object):
             account_id=account_id, purpose=self.purpose, key_type='bip32', witness_type=self.witness_type)
         self.main_key_id = self.main_key.key_id
         self._key_objects.update({self.main_key_id: self.main_key})
-        self._session.query(DbWallet).filter(DbWallet.id == self.wallet_id).\
+        self._session.query(DbWallet).filter(DbWallet.id == self.wallet_id). \
             update({DbWallet.main_key_id: self.main_key_id})
 
         for key in self.keys(is_private=False):
             kp = key.path.split("/")
             if kp and kp[0] == 'M':
-                kp = self.key_path[:self.depth_public_master+1] + kp[1:]
+                kp = self.key_path[:self.depth_public_master + 1] + kp[1:]
             self.key_for_path(kp, recreate=True)
 
         self._commit()
@@ -1651,7 +1654,7 @@ class Wallet(object):
             if key_type == 'single':
                 # Create path for unrelated import keys
                 hdkey.depth = self.key_depth
-                last_import_key = self._session.query(DbKey).filter(DbKey.path.like("import_key_%")).\
+                last_import_key = self._session.query(DbKey).filter(DbKey.path.like("import_key_%")). \
                     order_by(DbKey.path.desc()).first()
                 if last_import_key:
                     ik_path = "import_key_" + str(int(last_import_key.path[-5:]) + 1).zfill(5)
@@ -1752,12 +1755,14 @@ class Wallet(object):
                 cosigner_id = self.cosigner_id
 
         address_index = 0
-        if self.multisig and cosigner_id is not None and (len(self.cosigner) > cosigner_id and self.cosigner[cosigner_id].key_path == 'm' or self.cosigner[cosigner_id].key_path == ['m']):
+        if self.multisig and cosigner_id is not None and (
+                len(self.cosigner) > cosigner_id and self.cosigner[cosigner_id].key_path == 'm' or self.cosigner[
+            cosigner_id].key_path == ['m']):
             req_path = []
         else:
-            prevkey = self._session.query(DbKey).\
+            prevkey = self._session.query(DbKey). \
                 filter_by(wallet_id=self.wallet_id, purpose=self.purpose, network_name=network, account_id=account_id,
-                          change=change, cosigner_id=cosigner_id, depth=self.key_depth).\
+                          change=change, cosigner_id=cosigner_id, depth=self.key_depth). \
                 order_by(DbKey.address_index.desc()).first()
             if prevkey:
                 address_index = prevkey.address_index + 1
@@ -1864,7 +1869,7 @@ class Wallet(object):
         for chg in change_range:
             while True:
                 if self.scheme == 'single':
-                    keys_to_scan = [self.key(k.id) for k in self.keys_addresses()[counter:counter+scan_gap_limit]]
+                    keys_to_scan = [self.key(k.id) for k in self.keys_addresses()[counter:counter + scan_gap_limit]]
                     counter += scan_gap_limit
                 else:
                     keys_to_scan = self.get_keys(account_id, network, number_of_keys=scan_gap_limit, change=chg)
@@ -1891,16 +1896,16 @@ class Wallet(object):
             raise WalletError("Cosigner ID (%d) can not be greater then number of cosigners for this wallet (%d)" %
                               (cosigner_id, len(self.cosigner)))
 
-        last_used_qr = self._session.query(DbKey.id).\
+        last_used_qr = self._session.query(DbKey.id). \
             filter_by(wallet_id=self.wallet_id, account_id=account_id, network_name=network, cosigner_id=cosigner_id,
-                      used=True, change=change, depth=self.key_depth).\
+                      used=True, change=change, depth=self.key_depth). \
             order_by(DbKey.id.desc()).first()
         last_used_key_id = 0
         if last_used_qr:
             last_used_key_id = last_used_qr.id
-        dbkey = self._session.query(DbKey).\
+        dbkey = self._session.query(DbKey). \
             filter_by(wallet_id=self.wallet_id, account_id=account_id, network_name=network, cosigner_id=cosigner_id,
-                      used=False, change=change, depth=self.key_depth).filter(DbKey.id > last_used_key_id).\
+                      used=False, change=change, depth=self.key_depth).filter(DbKey.id > last_used_key_id). \
             order_by(DbKey.id.desc()).all()
         key_list = []
         if self.scheme == 'single' and len(dbkey):
@@ -2046,7 +2051,7 @@ class Wallet(object):
         if self.keys(account_id=account_id, depth=self.depth_public_master, network=network):
             raise WalletError("Account with ID %d already exists for this wallet" % account_id)
 
-        acckey = self.key_for_path([], level_offset=self.depth_public_master-self.key_depth, account_id=account_id,
+        acckey = self.key_for_path([], level_offset=self.depth_public_master - self.key_depth, account_id=account_id,
                                    name=name, network=network)
         self.key_for_path([0, 0], network=network, account_id=account_id)
         self.key_for_path([1, 0], network=network, account_id=account_id)
@@ -2195,7 +2200,7 @@ class Wallet(object):
                 if name and len(fullpath) == len(newpath.split('/')):
                     key_name = name
                 else:
-                    key_name = "%s %s" % (self.key_path[len(newpath.split('/'))-1], lvl)
+                    key_name = "%s %s" % (self.key_path[len(newpath.split('/')) - 1], lvl)
                     key_name = key_name.replace("'", "").replace("_", " ")
                 nk = WalletKey.from_key(key=ck, name=key_name, wallet_id=self.wallet_id, account_id=account_id,
                                         change=change, purpose=self.purpose, path=newpath, parent_id=parent_id,
@@ -2500,7 +2505,7 @@ class Wallet(object):
         if "account'" not in self.key_path:
             raise WalletError("Accounts are not supported for this wallet. Account not found in key path %s" %
                               self.key_path)
-        qr = self._session.query(DbKey).\
+        qr = self._session.query(DbKey). \
             filter_by(wallet_id=self.wallet_id, purpose=self.purpose, network_name=self.network.name,
                       account_id=account_id, depth=3).scalar()
         if not qr:
@@ -2540,8 +2545,8 @@ class Wallet(object):
 
         nw_list = [self.network]
         if self.multisig and self.cosigner:
-            keys_qr = self._session.query(DbKey.network_name).\
-                filter_by(wallet_id=self.wallet_id, depth=self.key_depth).\
+            keys_qr = self._session.query(DbKey.network_name). \
+                filter_by(wallet_id=self.wallet_id, depth=self.key_depth). \
                 group_by(DbKey.network_name).all()
             nw_list += [Network(nw[0]) for nw in keys_qr]
         elif self.main_key.key_type != 'single':
@@ -2654,7 +2659,7 @@ class Wallet(object):
         """
 
         qr = self._session.query(DbTransactionOutput, func.sum(DbTransactionOutput.value), DbTransaction.network_name,
-                                 DbTransaction.account_id).\
+                                 DbTransaction.account_id). \
             join(DbTransaction). \
             filter(DbTransactionOutput.spent.is_(False),
                    DbTransaction.wallet_id == self.wallet_id,
@@ -2838,7 +2843,7 @@ class Wallet(object):
                 for utxo in utxos:
                     key = single_key
                     if not single_key:
-                        key = self._session.query(DbKey).\
+                        key = self._session.query(DbKey). \
                             filter_by(wallet_id=self.wallet_id, address=utxo['address']).scalar()
                     if not key:
                         raise WalletError("Key with address %s not found in this wallet" % utxo['address'])
@@ -2848,14 +2853,14 @@ class Wallet(object):
                         status = 'confirmed'
 
                     # Update confirmations in db if utxo was already imported
-                    transaction_in_db = self._session.query(DbTransaction).\
+                    transaction_in_db = self._session.query(DbTransaction). \
                         filter_by(wallet_id=self.wallet_id, txid=bytes.fromhex(utxo['txid']),
                                   network_name=network)
-                    utxo_in_db = self._session.query(DbTransactionOutput).join(DbTransaction).\
+                    utxo_in_db = self._session.query(DbTransactionOutput).join(DbTransaction). \
                         filter(DbTransaction.wallet_id == self.wallet_id,
                                DbTransaction.txid == bytes.fromhex(utxo['txid']),
                                DbTransactionOutput.output_n == utxo['output_n'])
-                    spent_in_db = self._session.query(DbTransactionInput).join(DbTransaction).\
+                    spent_in_db = self._session.query(DbTransactionInput).join(DbTransaction). \
                         filter(DbTransaction.wallet_id == self.wallet_id,
                                DbTransactionInput.prev_txid == bytes.fromhex(utxo['txid']),
                                DbTransactionInput.output_n == utxo['output_n'])
@@ -2888,7 +2893,7 @@ class Wallet(object):
 
                         script_type = script_type_default(self.witness_type, multisig=self.multisig,
                                                           locking_script=True)
-                        new_utxo = DbTransactionOutput(transaction_id=tid,  output_n=utxo['output_n'],
+                        new_utxo = DbTransactionOutput(transaction_id=tid, output_n=utxo['output_n'],
                                                        value=utxo['value'], key_id=key.id, address=utxo['address'],
                                                        script=bytes.fromhex(utxo['script']),
                                                        script_type=script_type,
@@ -2931,7 +2936,7 @@ class Wallet(object):
         network, account_id, acckey = self._get_account_defaults(network, account_id, first_key_id)
 
         qr = self._session.query(DbTransactionOutput, DbKey.address, DbTransaction.confirmations, DbTransaction.txid,
-                                 DbKey.network_name).\
+                                 DbKey.network_name). \
             join(DbTransaction).join(DbKey). \
             filter(DbTransactionOutput.spent.is_(False),
                    DbTransaction.account_id == account_id,
@@ -3100,11 +3105,11 @@ class Wallet(object):
 
         srv = Service(network=network, providers=self.providers, cache_uri=self.db_cache_uri)
         blockcount = srv.blockcount()
-        db_txs = self._session.query(DbTransaction).\
+        db_txs = self._session.query(DbTransaction). \
             filter(DbTransaction.wallet_id == self.wallet_id,
                    DbTransaction.network_name == network, DbTransaction.block_height > 0).all()
         for db_tx in db_txs:
-            self._session.query(DbTransaction).filter_by(id=db_tx.id).\
+            self._session.query(DbTransaction).filter_by(id=db_tx.id). \
                 update({DbTransaction.status: 'confirmed',
                         DbTransaction.confirmations: (blockcount - DbTransaction.block_height) + 1})
         self._commit()
@@ -3135,7 +3140,7 @@ class Wallet(object):
             utxos = [(ti.prev_txid.hex(), ti.output_n_int) for ti in wt.inputs]
             utxo_set.update(utxos)
         for utxo in list(utxo_set):
-            tos = self._session.query(DbTransactionOutput).join(DbTransaction).\
+            tos = self._session.query(DbTransactionOutput).join(DbTransaction). \
                 filter(DbTransaction.txid == bytes.fromhex(utxo[0]), DbTransactionOutput.output_n == utxo[1],
                        DbTransactionOutput.spent.is_(False), DbTransaction.wallet_id == self.wallet_id).all()
             for u in tos:
@@ -3156,7 +3161,7 @@ class Wallet(object):
 
         :return str:
         """
-        txid = self._session.query(DbKey.latest_txid).\
+        txid = self._session.query(DbKey.latest_txid). \
             filter(DbKey.address == address, DbKey.wallet_id == self.wallet_id).scalar()
         return '' if not txid else txid.hex()
 
@@ -3213,7 +3218,7 @@ class Wallet(object):
             qr = qr.filter(or_(DbTransaction.status == 'confirmed', DbTransaction.status == 'unconfirmed'))
         txs += qr.all()
 
-        txs = sorted(txs, key=lambda k: (k[2], pow(10, 20)-k[0].transaction_id, k[3]), reverse=True)
+        txs = sorted(txs, key=lambda k: (k[2], pow(10, 20) - k[0].transaction_id, k[3]), reverse=True)
         res = []
         txids = []
         for tx in txs:
@@ -3428,7 +3433,7 @@ class Wallet(object):
         else:
             # Try to find one utxo with higher amount
             one_utxo = utxo_query. \
-                filter(DbTransactionOutput.spent.is_(False), DbTransactionOutput.value >= amount).\
+                filter(DbTransactionOutput.spent.is_(False), DbTransactionOutput.value >= amount). \
                 order_by(DbTransactionOutput.value).first()
             if one_utxo:
                 selected_utxos = [one_utxo]
@@ -3440,7 +3445,7 @@ class Wallet(object):
         # Otherwise compose of 2 or more lesser outputs
         if not selected_utxos:
             lessers = utxo_query. \
-                filter(DbTransactionOutput.spent.is_(False), DbTransactionOutput.value < amount).\
+                filter(DbTransactionOutput.spent.is_(False), DbTransactionOutput.value < amount). \
                 order_by(DbTransactionOutput.value.desc()).all()
             total_amount = 0
             selected_utxos = []
@@ -3460,8 +3465,8 @@ class Wallet(object):
                 multisig = False if len(inp_keys) < 2 else True
                 script_type = get_unlocking_script_type(utxo.script_type, multisig=multisig)
                 inputs.append(Input(utxo.transaction.txid, utxo.output_n, keys=inp_keys, script_type=script_type,
-                              sigs_required=self.multisig_n_required, sort=self.sort_keys, address=key.address,
-                              compressed=key.compressed, value=utxo.value, network=key.network_name))
+                                    sigs_required=self.multisig_n_required, sort=self.sort_keys, address=key.address,
+                                    compressed=key.compressed, value=utxo.value, network=key.network_name))
             return inputs
 
     def transaction_create(self, output_arr, input_arr=None, input_key_id=None, account_id=None, network=None, fee=None,
@@ -3630,7 +3635,7 @@ class Wallet(object):
                     else:
                         _logger.info("UTXO %s not found in this wallet. Please update UTXO's if this is not an "
                                      "offline wallet" % to_hexstring(prev_txid))
-                        key_id = self._session.query(DbKey.id).\
+                        key_id = self._session.query(DbKey.id). \
                             filter(DbKey.wallet_id == self.wallet_id, DbKey.address == address).scalar()
                         if not key_id:
                             raise WalletError("UTXO %s and key with address %s not found in this wallet" % (
@@ -3673,7 +3678,8 @@ class Wallet(object):
             transaction.change = int(amount_total_input - (amount_total_output + transaction.fee))
 
         # Skip change if amount is smaller than the dust limit or estimated fee
-        if (fee_per_output and transaction.change < fee_per_output) or transaction.change <= transaction.network.dust_amount:
+        if (
+                fee_per_output and transaction.change < fee_per_output) or transaction.change <= transaction.network.dust_amount:
             transaction.fee += transaction.change
             transaction.change = 0
         if transaction.change < 0:
@@ -4076,7 +4082,7 @@ class Wallet(object):
             if is_private and self.main_key:
                 return self.main_key.wif
             else:
-                return self.public_master(account_id=account_id).key().\
+                return self.public_master(account_id=account_id).key(). \
                     wif(is_private=is_private, witness_type=self.witness_type, multisig=self.multisig)
         else:
             wiflist = []

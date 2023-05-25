@@ -976,7 +976,7 @@ def bip38_decrypt(encrypted_privkey, password):
     addresshash = d[0:4]
     d = d[4:-4]
     try:
-        key = scrypt(password, addresshash, 64, 16384, 8, 8)
+        key = scrypt(str(password), addresshash, 64, 16384, 8, 8)
     except Exception:
         key = scrypt.hash(password, addresshash, 16384, 8, 8, 64)
     derivedhalf1 = key[0:32]
@@ -1017,7 +1017,7 @@ def bip38_encrypt(private_hex, address, password, flagbyte=b'\xe0'):
         password = password.encode('utf-8')
     addresshash = double_sha256(address)[0:4]
     try:
-        key = scrypt(password, addresshash, 64, 16384, 8, 8)
+        key = scrypt(str(password), addresshash, 64, 16384, 8, 8)
     except Exception:
         key = scrypt.hash(password, addresshash, 16384, 8, 8, 64)
     derivedhalf1 = key[0:32]

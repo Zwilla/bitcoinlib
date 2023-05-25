@@ -57,8 +57,8 @@ class BlockChairClient(BaseClient):
                 url_path += '/'
             url_path += data
         if query_vars:
-            varstr = ','.join(['%s(%s)' % (qv, query_vars[qv]) for qv in query_vars])
-            variables.update({'q': varstr})
+            varstring = varstr(','.join(['%s(%s)' % (qv, query_vars[qv]) for qv in query_vars]))
+            variables.update({'q': varstring})
         return self.request(url_path, variables, method=method)
 
     def getbalance(self, addresslist):

@@ -11,18 +11,15 @@
 import sys
 import argparse
 import ast
+import pyqrcode
 from pprint import pprint
 from bitcoinlib.wallets import Wallet, wallets_list, wallet_exists, wallet_delete, WalletError, wallet_empty
 from bitcoinlib.mnemonic import Mnemonic
 from bitcoinlib.keys import HDKey
 from bitcoinlib.main import BITCOINLIB_VERSION
 
-try:
-    import pyqrcode
+QRCODES_AVAILABLE = True
 
-    QRCODES_AVAILABLE = True
-except ImportError:
-    QRCODES_AVAILABLE = False
 
 DEFAULT_NETWORK = 'bitcoin'
 

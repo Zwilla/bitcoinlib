@@ -69,8 +69,8 @@ class TestMnemonics(unittest.TestCase):
         self.assertEqual(Mnemonic().to_mnemonic('28acfc94465fd2f6774759d6897ec122', add_checksum=False),
                          'action filter venture match garlic nut oven modify output dwarf wild cattle')
         self.assertRaisesRegex(ValueError, "Integer value of data should be in secp256k1 domain between 1 and "
-                                            "secp256k1_n-1", Mnemonic().to_mnemonic,
-                                '28acfc94465fd2f6774759d6897ec12228acfc94465fd2f6774759d6897ec12228acfc94465fd2f6774')
+                                           "secp256k1_n-1", Mnemonic().to_mnemonic,
+                               '28acfc94465fd2f6774759d6897ec12228acfc94465fd2f6774759d6897ec12228acfc94465fd2f6774')
 
     def test_mnemonic_to_seed_invalid_checksum(self):
         phrase = "runway truly foil future recall scatter garage over floor clutch shy boat"
@@ -79,13 +79,13 @@ class TestMnemonics(unittest.TestCase):
     def test_mnemonic_exceptions(self):
         self.assertRaisesRegex(ValueError, "Strength should be divisible by 32", Mnemonic().generate, 20)
         self.assertRaisesRegex(ValueError, "Data length in bits should be divisible by 32", Mnemonic().checksum,
-                                'aabbccddeeff')
+                               'aabbccddeeff')
         self.assertRaisesRegex(Warning, "Unrecognised word",
-                                Mnemonic().sanitize_mnemonic,
-                                'action filter venture match garlic nut oven modify output dwarf wild fiets')
+                               Mnemonic().sanitize_mnemonic,
+                               'action filter venture match garlic nut oven modify output dwarf wild fiets')
         self.assertRaisesRegex(Warning, "Could not detect language",
-                                Mnemonic().detect_language,
-                                'floep fliep')
+                               Mnemonic().detect_language,
+                               'floep fliep')
 
     def test_mnemonic_wordlists(self):
         self.assertEqual(Mnemonic().word(2047), 'zoo')

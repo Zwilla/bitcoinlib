@@ -11,7 +11,6 @@ import os
 from bitcoinlib.wallets import *
 from bitcoinlib.mnemonic import Mnemonic
 
-
 #
 # Create Wallets
 #
@@ -57,7 +56,6 @@ nkc = testnet_wallet.new_key_change(account_id=99, name="Change #1")
 nkc2 = testnet_wallet.new_key_change(account_id=99, name="Change #2")
 testnet_wallet.utxos_update()
 testnet_wallet.info(detail=3)
-
 
 #
 # Using wallets
@@ -129,7 +127,7 @@ print("Generated Passphrase: %s" % words)
 seed = Mnemonic().to_seed(words)
 hdkey = HDKey.from_seed(seed, network='litecoin_testnet')
 wallet = Wallet.create(name='Mnemonic Wallet', network='litecoin_testnet',
-                         keys=hdkey.wif(), db_uri=test_database)
+                       keys=hdkey.wif(), db_uri=test_database)
 wallet.new_key("Input", 0)
 wallet.utxos_update()
 wallet.info(detail=3)

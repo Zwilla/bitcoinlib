@@ -107,11 +107,9 @@ class AuthServiceProxy(object):
             # Callables re-use the connection of the original proxy
             self.__conn = connection
         elif self.__url.scheme == 'https':
-            self.__conn = httplib.HTTPSConnection(self.__url.hostname, port,
-                                                  timeout=timeout)
+            self.__conn = httplib.HTTPSConnection(str(self.__url.hostname), port, timeout=timeout)
         else:
-            self.__conn = httplib.HTTPConnection(self.__url.hostname, port,
-                                                 timeout=timeout)
+            self.__conn = httplib.HTTPConnection(str(self.__url.hostname), port, timeout=timeout)
 
     def __getattr__(self, name):
         if name.startswith('__') and name.endswith('__'):
@@ -125,7 +123,7 @@ class AuthServiceProxy(object):
         AuthServiceProxy.__id_count += 1
 
         log.info("-%s-> %s %s" % (AuthServiceProxy.__id_count, self.__service_name,
-                                   json.dumps(args, default=EncodeDecimal)))
+                                  json.dumps(args, default=EncodeDecimal)))
         postdata = json.dumps({'version': '1.1',
                                'method': self.__service_name,
                                'params': args,
@@ -186,7 +184,7 @@ class AuthServiceProxy(object):
         if content_type != 'application/json':
             raise JSONRPCException({
                 'code': -342, 'message': 'non-JSON HTTP response with \'%i %s\' from server' % (
-                http_response.status, http_response.reason)})
+                    http_response.status, http_response.reason)})
 
         responsedata = http_response.read().decode('utf8')
         response = json.loads(responsedata, parse_float=decimal.Decimal)

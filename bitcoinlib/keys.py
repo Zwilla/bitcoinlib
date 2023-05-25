@@ -23,6 +23,8 @@ import random
 import collections
 import json
 
+from fastecdsa.point import Point
+
 from bitcoinlib.networks import Network, network_by_value, wif_prefix_search
 from bitcoinlib.config.secp256k1 import *
 from bitcoinlib.encoding import *
@@ -1130,7 +1132,7 @@ class Key(object):
 
         :return tuple: (x, y) point
         """
-        return (self.x, self.y)
+        return self.x, self.y
 
     @property
     def hash160(self):
@@ -1924,8 +1926,8 @@ class HDKey(Key):
             ki_y = ki.y
         else:
             ki = ec_point(key) + ecdsa.ellipticcurve.Point(secp256k1_curve, x, y, secp256k1_n)
-            ki_x = ki.x()
-            ki_y = ki.y()
+            ki_x = ki.x
+            ki_y = ki.y
 
         if ki_y % 2:
             prefix = '03'

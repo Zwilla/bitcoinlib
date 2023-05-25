@@ -40,9 +40,9 @@ class ConfigError(Exception):
         return self.msg
 
 
-def _read_from_config(configparser, section, value, fallback=None):
+def _read_from_config(configparsers, section, value, fallback=None):
     try:
-        return configparser.get(section, value)
+        return configparsers.configparser.get(section, value)
     except Exception:
         return fallback
 

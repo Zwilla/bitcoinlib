@@ -23,7 +23,8 @@ from sqlalchemy import (Column, Integer, BigInteger, UniqueConstraint, CheckCons
                         ForeignKey, DateTime, LargeBinary, TypeDecorator)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.orm import sessionmaker, relationship, close_all_sessions
+from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm.session import close_all_sessions
 from urllib.parse import urlparse
 from bitcoinlib.main import *
 from bitcoinlib.encoding import aes_encrypt, aes_decrypt
@@ -51,8 +52,8 @@ class Db:
         if db_uri is None:
             db_uri = DEFAULT_DATABASE
         self.o = urlparse(db_uri)
-        if not self.o.scheme or \
-                len(self.o.scheme) < 2:  # Dirty hack to avoid issues with urlparse on Windows confusing drive with scheme
+        if not self.o.scheme or len(self.o.scheme) < 2:
+            # Dirty hack to avoid issues with urlparse on Windows confusing drive with scheme
             if password:
                 # Warning: This requires the pysqlcipher3 module
                 db_uri = 'sqlite+pysqlcipher://:%s@/%s?cipher=aes-256-cfb&kdf_iter=64000' % (password, db_uri)
@@ -96,7 +97,6 @@ class Db:
     def drop_db(self, yes_i_am_sure=False):
         if yes_i_am_sure:
             self.session.commit()
-            self.session.close_all()
             close_all_sessions()
             Base.metadata.drop_all(self.engine)
 
@@ -177,7 +177,7 @@ class EncryptedString(TypeDecorator):
         if value is None or self.key is None or not DATABASE_ENCRYPTION_ENABLED:
             return value
         if not isinstance(value, bytes):
-            value = bytes(value, 'utf8')
+            value = bytes(str(value), 'utf8')
         return aes_encrypt(value, self.key)
 
     def process_result_value(self, value, dialect):

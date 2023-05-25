@@ -466,21 +466,21 @@ class TestStack(unittest.TestCase):
 
     # TODO: Add
     # def test_op_checklocktimeverify(self):
-        # cur_timestamp = int(datetime.now().timestamp())
-        # st = Stack([encode_num(500)])
-        # self.assertTrue(st.op_checklocktimeverify(tx_locktime=1000, sequence=1))
-        # self.assertFalse(st.op_checklocktimeverify(tx_locktime=1000, sequence=0xffffffff))
-        # self.assertFalse(st.op_checklocktimeverify(tx_locktime=499, sequence=1))
-        # self.assertTrue(st.op_checklocktimeverify(tx_locktime=500, sequence=1))
-        # self.assertFalse(st.op_checklocktimeverify(tx_locktime=cur_timestamp, sequence=1))
-        #
-        # st = Stack([encode_num(cur_timestamp-100)])
-        # self.assertTrue(st.op_checklocktimeverify(sequence=0xfffffffe, tx_locktime=cur_timestamp))
-        # self.assertFalse(st.op_checklocktimeverify(sequence=0xfffffffe, tx_locktime=660600))
-        #
-        # cur_timestamp = int(datetime.now().timestamp())
-        # st = Stack([encode_num(cur_timestamp+100)])
-        # self.assertFalse(st.op_checklocktimeverify(sequence=0xfffffffe, tx_locktime=cur_timestamp))
+    # cur_timestamp = int(datetime.now().timestamp())
+    # st = Stack([encode_num(500)])
+    # self.assertTrue(st.op_checklocktimeverify(tx_locktime=1000, sequence=1))
+    # self.assertFalse(st.op_checklocktimeverify(tx_locktime=1000, sequence=0xffffffff))
+    # self.assertFalse(st.op_checklocktimeverify(tx_locktime=499, sequence=1))
+    # self.assertTrue(st.op_checklocktimeverify(tx_locktime=500, sequence=1))
+    # self.assertFalse(st.op_checklocktimeverify(tx_locktime=cur_timestamp, sequence=1))
+    #
+    # st = Stack([encode_num(cur_timestamp-100)])
+    # self.assertTrue(st.op_checklocktimeverify(sequence=0xfffffffe, tx_locktime=cur_timestamp))
+    # self.assertFalse(st.op_checklocktimeverify(sequence=0xfffffffe, tx_locktime=660600))
+    #
+    # cur_timestamp = int(datetime.now().timestamp())
+    # st = Stack([encode_num(cur_timestamp+100)])
+    # self.assertFalse(st.op_checklocktimeverify(sequence=0xfffffffe, tx_locktime=cur_timestamp))
 
     # TODO: Add
     # def test_op_checksequenceverify(self):
@@ -551,11 +551,11 @@ class TestScriptTypes(unittest.TestCase):
                             '210202be80a0ca69c0e000b97d507f45b98c49f58fec6650b64ff70e6ffccc3e6d00'
                             '210202be80a0ca69c0e000b97d507f45b98c49f58fec6650b64ff70e6ffccc3e6d0052ae')
         self.assertRaisesRegex(ScriptError, '3 keys found but 2 keys expected',
-                                Script.parse, scr)
+                               Script.parse, scr)
         self.assertRaisesRegex(ScriptError, 'Number of signatures required \(3\) is higher then number of keys \(2\)',
-                                Script.parse,
-                                '532102d9d64770e0510c650cfaa0c05ba34f6faa35a18defcf9f2d493c4c225d93fbf221020c39c418c2'
-                                '38ba876d09c4529bdafb2a1295c57ece923997ab693bf0a84189b852ae')
+                               Script.parse,
+                               '532102d9d64770e0510c650cfaa0c05ba34f6faa35a18defcf9f2d493c4c225d93fbf221020c39c418c2'
+                               '38ba876d09c4529bdafb2a1295c57ece923997ab693bf0a84189b852ae')
 
     def test_script_type_empty_unknown(self):
         s = Script.parse(b'')
@@ -711,8 +711,8 @@ class TestScript(unittest.TestCase, CustomAssertions):
             '07659d8cac749a0e53d70eff01874496feff2103c96d495bfdd5ba4145e3e046fee45e84a8a48ad05bd8dbb395c011a32cf9f8'
             '8053ae')
         witnesses = varstr(bytes.fromhex(
-                        '304402200ff7be6d618235673218107f7f5ffcefeaed5b045dc01a88b7253ec8cc053ec50'
-                        '22039b2eaa510d3a5cf634377e8dfa95061d9ad81e83a334c8cb03084cee110faf301')) + \
+            '304402200ff7be6d618235673218107f7f5ffcefeaed5b045dc01a88b7253ec8cc053ec50'
+            '22039b2eaa510d3a5cf634377e8dfa95061d9ad81e83a334c8cb03084cee110faf301')) + \
                     varstr(bytes.fromhex(
                         '3044022026312b6c39a71168113aaf7073bc904b1c77b4253e741e60de78ff16239cfe6202205cc9c4d6905a9b'
                         '3cebd970d91261896cb7ade4d198d16112651ac6833083b49e01')) + redeemscript
@@ -721,7 +721,8 @@ class TestScript(unittest.TestCase, CustomAssertions):
         s = Script.parse_bytes(script)
         self.assertEqual(s.blueprint, ['signature', 'signature', 82, 'key', 'key', 'key', 83, 174, 168, 'data-32', 135])
         self.assertEqual(s.script_types, ['unknown'])
-        self.assertEqual(str(s), "signature signature OP_2 key key key OP_3 OP_CHECKMULTISIG OP_SHA256 data-32 OP_EQUAL")
+        self.assertEqual(str(s),
+                         "signature signature OP_2 key key key OP_3 OP_CHECKMULTISIG OP_SHA256 data-32 OP_EQUAL")
         transaction_hash = bytes.fromhex('43f0f6dfb58acc8ed05f5afc224c2f6c50523230bfcba5e5fd91d345e8a159ab')
         data = {'redeemscript': redeemscript}
         self.assertTrue(s.evaluate(message=transaction_hash, tx_data=data))
@@ -823,11 +824,11 @@ class TestScript(unittest.TestCase, CustomAssertions):
         keylist = [Key(k) for k in [key1, key2, key3]]
         redeemscript = Script(keys=keylist, sigs_required=2, script_types=['multisig'])
         expected_redeemscript = \
-                       '524104a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09' \
-                       'e63975a1700c9f4d4df849323dac06cf3bd6458cd41046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff' \
-                       '90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187410411ffd36c7' \
-                       '0776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea6' \
-                       '00bd217870a8b4f1f09f3a8e8353ae'
+            '524104a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09' \
+            'e63975a1700c9f4d4df849323dac06cf3bd6458cd41046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff' \
+            '90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187410411ffd36c7' \
+            '0776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea6' \
+            '00bd217870a8b4f1f09f3a8e8353ae'
         self.assertEqual(expected_redeemscript, redeemscript.serialize().hex())
 
         redeemscript3 = b'\x52' + b''.join([varstr(k) for k in keylist]) + b'\x53\xae'

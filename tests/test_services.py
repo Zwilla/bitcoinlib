@@ -20,6 +20,7 @@
 
 import unittest
 import logging
+
 try:
     import mysql.connector
     from parameterized import parameterized_class
@@ -106,11 +107,11 @@ class TestService(unittest.TestCase, CustomAssertions):
 
     def test_service_sendrawtransaction(self):
         raw_tx = \
-         '010000000108004b4c0394a211d4ec0d344b70bf1e3b1ce1731d11d1d30279ab0c0f6d9fd7000000006c493046022100ab18a72f7' \
-         '87e4c8ea5d2f983b99df28d27e13482b91fd6d48701c055af92f525022100d1c26b8a779896a53a026248388896501e724e46407f' \
-         '14a4a1b6478d3293da24012103e428723c145e61c35c070da86faadaf0fab21939223a5e6ce3e1cfd76bad133dffffffff0240420' \
-         'f00000000001976a914bbaeed8a02f64c9d40462d323d379b8f27ad9f1a88ac905d1818000000001976a914046858970a72d33817' \
-         '474c0e24e530d78716fc9c88ac00000000'
+            '010000000108004b4c0394a211d4ec0d344b70bf1e3b1ce1731d11d1d30279ab0c0f6d9fd7000000006c493046022100ab18a72f7' \
+            '87e4c8ea5d2f983b99df28d27e13482b91fd6d48701c055af92f525022100d1c26b8a779896a53a026248388896501e724e46407f' \
+            '14a4a1b6478d3293da24012103e428723c145e61c35c070da86faadaf0fab21939223a5e6ce3e1cfd76bad133dffffffff0240420' \
+            'f00000000001976a914bbaeed8a02f64c9d40462d323d379b8f27ad9f1a88ac905d1818000000001976a914046858970a72d33817' \
+            '474c0e24e530d78716fc9c88ac00000000'
         srv = ServiceTest(network='testnet')
         try:
             srv.sendrawtransaction(raw_tx)
@@ -302,13 +303,13 @@ class TestService(unittest.TestCase, CustomAssertions):
             self.assertEqual(r_inputs[2], input2, msg="Unexpected transaction input values for %s provider" % provider)
 
     def test_service_gettransactions_after_txid(self):
-        res = ServiceTest(timeout=TIMEOUT_TEST).\
+        res = ServiceTest(timeout=TIMEOUT_TEST). \
             gettransactions('3As4asrpMryntmrVgexCD9i3f3qZP92Zct',
                             after_txid='d14f4dfafa3578250ffd596b3f69836ef5e35d57ceced1cc0850d2246964dd3a')
         self.assertEqual(res[0].txid, '8b8a8f1de23f70b2bdaa74488d97dc64728c2d99d2d486945c71e258fdef6ca1')
 
     def test_service_gettransactions_after_txid_segwit(self):
-        res = ServiceTest(timeout=TIMEOUT_TEST, exclude_providers=['blockcypher']).\
+        res = ServiceTest(timeout=TIMEOUT_TEST, exclude_providers=['blockcypher']). \
             gettransactions('bc1q34aq5drpuwy3wgl9lhup9892qp6svr8ldzyy7c',
                             after_txid='f91d0a8a78462bc59398f2c5d7a84fcff491c26ba54c4833478b202796c8aafd')
         tx_ids = [
@@ -328,7 +329,7 @@ class TestService(unittest.TestCase, CustomAssertions):
     def test_service_gettransactions_addresslist_error(self):
         self.assertRaisesRegex(ServiceError, "Address parameter must be of type text",
                                ServiceTest().gettransactions,
-                                ['1LGJzocooaciEtsxEVAajLhCymCXNvPoLh', '19KedreX9aR64fN7tnNzVLVFHQAUL6dLzr'])
+                               ['1LGJzocooaciEtsxEVAajLhCymCXNvPoLh', '19KedreX9aR64fN7tnNzVLVFHQAUL6dLzr'])
 
     def test_service_gettransaction(self):
         expected_dict = {
@@ -690,7 +691,7 @@ class TestService(unittest.TestCase, CustomAssertions):
 
     def test_service_errors(self):
         self.assertRaisesRegex(ServiceError, "Provider 'unknown_provider' not found in provider definitions",
-                                Service, providers='unknown_provider')
+                               Service, providers='unknown_provider')
 
     def test_service_mempool(self):
         txid = 'ed7e0ecceb6c4d6f10ca935d8dc037921f9855fd46a2e51d82f76dd5ec564a3a'
@@ -751,10 +752,12 @@ class TestService(unittest.TestCase, CustomAssertions):
         print("Test getblock using provider %s" % list(srv.results.keys())[0])
         self.assertEqual(b.height, 599999)
         self.assertEqual(to_hexstring(b.block_hash), '00000000000000000003ecd827f336c6971f6f77a0b9fba362398dd867975645')
-        self.assertEqual(to_hexstring(b.merkle_root), 'ca13ce7f21619f73fb5a062696ec06a4427c6ad9e523e7bc1cf5287c137ddcea')
+        self.assertEqual(to_hexstring(b.merkle_root),
+                         'ca13ce7f21619f73fb5a062696ec06a4427c6ad9e523e7bc1cf5287c137ddcea')
         self.assertEqual(b.nonce_int, 687352075)
         if list(srv.results.keys())[0] != 'blockchair':
-            self.assertEqual(to_hexstring(b.prev_block), '00000000000000000006c6a3fdbfe651c87e207ca0109749899a6116baa33bf0')
+            self.assertEqual(to_hexstring(b.prev_block),
+                             '00000000000000000006c6a3fdbfe651c87e207ca0109749899a6116baa33bf0')
         self.assertEqual(b.time, 1571443335)
         self.assertEqual(b.tx_count, 3394)
         self.assertEqual(b.version_int, 536928256)
@@ -767,7 +770,7 @@ class TestService(unittest.TestCase, CustomAssertions):
         self.assertEqual(t1.locktime, 0)
         self.assertEqual(t1.inputs[0].address, '3Fe8L5dUaRn4uLHQLsfUGSJAT6S23Wtk47')
         self.assertEqual(to_hexstring(t1.inputs[0].prev_txid),
-                 'a3cc61610b3a662fd3d3d6b4bf15c6a295cb8246f90e8fe132852f8265a4713b')
+                         'a3cc61610b3a662fd3d3d6b4bf15c6a295cb8246f90e8fe132852f8265a4713b')
         self.assertEqual(t1.outputs[1].address, '3ADMeKFFJB4cNJ3mYNGTsaFv85ad5ZcjHu')
         # self.assertEqual(t1.outputs[1].value, 8638768306)
 

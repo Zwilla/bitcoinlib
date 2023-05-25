@@ -114,21 +114,21 @@ class TestEncodingMethodsChangeBase(unittest.TestCase):
 
     def test_change_base_decimal_input_lenght_exception(self):
         self.assertRaisesRegex(EncodingError, "For a decimal input a minimum output length is required",
-                                change_base, 100, 10, 2)
+                               change_base, 100, 10, 2)
 
     def test_encoding_exceptions(self):
         self.assertRaisesRegex(EncodingError, "Unknown input format {}",
-                                change_base, {}, 4, 2)
+                               change_base, {}, 4, 2)
         self.assertRaisesRegex(EncodingError, "Byteint must be a list or defined as bytes",
-                                varbyteint_to_int, 'fd1027')
+                               varbyteint_to_int, 'fd1027')
         self.assertRaisesRegex(EncodingError, "Input must be a number type",
-                                int_to_varbyteint, '1000')
+                               int_to_varbyteint, '1000')
         self.assertRaisesRegex(TypeError, "String value expected", normalize_string, 100)
         self.assertRaisesRegex(EncodingError, "Encoding base32 not supported", pubkeyhash_to_addr, '123',
-                                encoding='base32')
+                               encoding='base32')
         addr = 'qc1qy8qmc6262m68ny0ftlexs4h9paud8sgce3sf84'
         self.assertRaisesRegex(EncodingError, "Invalid bech32 address. Prefix 'qc', prefix expected is 'bc'",
-                                addr_bech32_to_pubkeyhash, addr, prefix='bc')
+                               addr_bech32_to_pubkeyhash, addr, prefix='bc')
 
 
 class TestEncodingMethodsAddressConversion(unittest.TestCase):
@@ -165,12 +165,14 @@ class TestEncodingMethodsAddressConversion(unittest.TestCase):
     def test_address_base58_zero_prefixes(self):
         self.assertEqual(pubkeyhash_to_addr_base58('00003acd8f60b766e48e9db32093b419c21de7e9'),
                          '111GxfgFVyDW3zcFpUF1upSZoL7GCRiLk')
-        self.assertEqual(change_base('000000003acd8f60b766e48e9db32093b419c21de7e9b35f7e0d', 16, 58), '1111GxfgFVyDW3zcFpUF1upSZoL7GCRiLk')
-        self.assertEqual(change_base('0000003acd8f60b766e48e9db32093b419c21de7e9b35f7e0d', 16, 58), '111GxfgFVyDW3zcFpUF1upSZoL7GCRiLk')
+        self.assertEqual(change_base('000000003acd8f60b766e48e9db32093b419c21de7e9b35f7e0d', 16, 58),
+                         '1111GxfgFVyDW3zcFpUF1upSZoL7GCRiLk')
+        self.assertEqual(change_base('0000003acd8f60b766e48e9db32093b419c21de7e9b35f7e0d', 16, 58),
+                         '111GxfgFVyDW3zcFpUF1upSZoL7GCRiLk')
         self.assertEqual(change_base('1111GxfgFVyDW3zcFpUF1upSZoL7GCRiLk', 58, 256).hex(),
                          '000000003acd8f60b766e48e9db32093b419c21de7e9b35f7e0d')
         self.assertRaisesRegex(EncodingError, "Invalid address hash160 length, should be 25 characters not",
-                                addr_base58_to_pubkeyhash, '1111GxfgFVyDW3zcFpUF1upSZoL7GCRiLk')
+                               addr_base58_to_pubkeyhash, '1111GxfgFVyDW3zcFpUF1upSZoL7GCRiLk')
 
 
 class TestEncodingMethodsStructures(unittest.TestCase):
@@ -355,7 +357,7 @@ class TestEncodingBech32SegwitAddresses(unittest.TestCase):
             data = _codestring_to_array(test[pos + 1:], 'bech32')
             hrp_expanded = [ord(x) >> 5 for x in hrp] + [0] + [ord(x) & 31 for x in hrp]
             self.assertEqual(_bech32_polymod(hrp_expanded + data), 1, msg="Invalid checksum for address %s" % test)
-            test = test[:pos+1] + chr(ord(test[pos + 1]) ^ 1) + test[pos+2:]
+            test = test[:pos + 1] + chr(ord(test[pos + 1]) ^ 1) + test[pos + 2:]
             try:
                 self.assertFalse(addr_bech32_to_pubkeyhash(test, hrp))
             except EncodingError:
@@ -393,20 +395,20 @@ class TestEncodingBech32SegwitAddresses(unittest.TestCase):
         self.assertEqual(str(Quantity(1 / 121608561109507200000, 'ots', precision=10)), '8.2231052722 zots')
         self.assertEqual(str(Quantity(0.0000000001, 'm', precision=2)), '100.00 pm')
         self.assertEqual(str(Quantity(121608561109507200000000000000000)), '121608561.110 Y')
-        self.assertEqual(str(Quantity(1/1216085611095072000000000000000)), '0.000 y')
-        self.assertEqual(str(Quantity(1/1216085611095072000000000000000, precision=10)), '0.0000008223 y')
+        self.assertEqual(str(Quantity(1 / 1216085611095072000000000000000)), '0.000 y')
+        self.assertEqual(str(Quantity(1 / 1216085611095072000000000000000, precision=10)), '0.0000008223 y')
         self.assertEqual(str(Quantity(10, 'pound', precision=0)), '10 pound')
         self.assertEqual(str(Quantity(0)), '0.000')
 
     # Source: https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki
     def test_bech32m_valid(self):
         for addr, pubkeyhash in BECH32M_VALID:
-            assert(pubkeyhash == addr_bech32_to_pubkeyhash(addr, include_witver=True).hex())
+            assert (pubkeyhash == addr_bech32_to_pubkeyhash(addr, include_witver=True).hex())
             prefix = addr.split('1')[0].lower()
             witver = change_base(addr.split('1')[1][0], 'bech32', 10)
             checksum_xor = addr_bech32_checksum(addr)
             addrc = pubkeyhash_to_addr_bech32(pubkeyhash, prefix, witver, checksum_xor=checksum_xor)
-            assert(addr.lower() == addrc)
+            assert (addr.lower() == addrc)
 
     def test_bech32_invalid(self):
         for addr, err in BECH32M_INVALID:

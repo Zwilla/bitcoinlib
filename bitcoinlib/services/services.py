@@ -30,7 +30,6 @@ from bitcoinlib.db_cache import *
 from bitcoinlib.transactions import Transaction, transaction_update_spents
 from bitcoinlib.blocks import Block
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -115,7 +114,7 @@ class Service(object):
                 self.providers.update({p: self.providers_defined[p]})
         for nop in exclude_providers:
             if nop in self.providers:
-                del(self.providers[nop])
+                del (self.providers[nop])
 
         if not self.providers:
             raise ServiceError("No providers found for network %s" % network)
@@ -159,7 +158,7 @@ class Service(object):
     def _provider_execute(self, method, *arguments):
         self._reset_results()
         provider_lst = [p[0] for p in sorted([(x, self.providers[x]['priority']) for x in self.providers],
-                        key=lambda x: (x[1], random.random()), reverse=True)]
+                                             key=lambda x: (x[1], random.random()), reverse=True)]
         if self.ignore_priority:
             random.shuffle(provider_lst)
 
@@ -167,7 +166,8 @@ class Service(object):
             if self.resultcount >= self.max_providers:
                 break
             try:
-                if sp not in ['bitcoind', 'litecoind', 'dashd', 'dogecoind', 'caching'] and not self.providers[sp]['url'] and \
+                if sp not in ['bitcoind', 'litecoind', 'dashd', 'dogecoind', 'caching'] and not self.providers[sp][
+                    'url'] and \
                         self.network.name != 'bitcoinlib_test':
                     continue
                 client = getattr(services, self.providers[sp]['provider'])
@@ -369,8 +369,8 @@ class Service(object):
 
         # Get (extra) transactions from service providers
         txs = []
-        if not(db_addr and db_addr.last_block and db_addr.last_block >= self.blockcount()) or not caching_enabled:
-            txs = self._provider_execute('gettransactions', address, qry_after_txid.hex(),  limit)
+        if not (db_addr and db_addr.last_block and db_addr.last_block >= self.blockcount()) or not caching_enabled:
+            txs = self._provider_execute('gettransactions', address, qry_after_txid.hex(), limit)
             if txs is False:
                 raise ServiceError("Error when retrieving transactions from service provider")
 
@@ -378,7 +378,7 @@ class Service(object):
         # - disable cache if comparing providers or if after_txid is used and no cache is available
         last_block = None
         last_txid = None
-        if self.min_providers <= 1 and not(after_txid and not db_addr) and caching_enabled:
+        if self.min_providers <= 1 and not (after_txid and not db_addr) and caching_enabled:
             last_block = self.blockcount()
             last_txid = qry_after_txid
             self.complete = True
@@ -544,9 +544,10 @@ class Service(object):
             block.transactions = self.cache.getblocktransactions(block.height, page, limit)
             if block.transactions:
                 self.results_cache_n = 1
-            is_last_page = page*limit > block.tx_count
-        if not block or (not len(block.transactions) and limit != 0) or (not is_last_page and len(block.transactions) < limit) or \
-                (is_last_page and ((page-1)*limit - block.tx_count + len(block.transactions)) < 0):
+            is_last_page = page * limit > block.tx_count
+        if not block or (not len(block.transactions) and limit != 0) or (
+                not is_last_page and len(block.transactions) < limit) or \
+                (is_last_page and ((page - 1) * limit - block.tx_count + len(block.transactions)) < 0):
             self.results_cache_n = 0
             bd = self._provider_execute('getblock', blockid, parse_transactions, page, limit)
             if not bd or isinstance(bd, bool):
@@ -558,7 +559,7 @@ class Service(object):
             block.page = page
 
             if parse_transactions and self.min_providers <= 1:
-                order_n = (page-1)*limit
+                order_n = (page - 1) * limit
                 for tx in block.transactions:
                     if isinstance(tx, Transaction):
                         self.cache.store_transaction(tx, order_n, commit=False)
@@ -794,13 +795,13 @@ class Cache(object):
         txs = []
         if db_addr:
             if after_txid:
-                after_tx = self.session.query(DbCacheTransaction).\
+                after_tx = self.session.query(DbCacheTransaction). \
                     filter_by(txid=after_txid, network_name=self.network.name).scalar()
                 if after_tx and db_addr.last_block and after_tx.block_height:
-                    db_txs = self.session.query(DbCacheTransaction).join(DbCacheTransactionNode).\
+                    db_txs = self.session.query(DbCacheTransaction).join(DbCacheTransactionNode). \
                         filter(DbCacheTransactionNode.address == address,
                                DbCacheTransaction.block_height >= after_tx.block_height,
-                               DbCacheTransaction.block_height <= db_addr.last_block).\
+                               DbCacheTransaction.block_height <= db_addr.last_block). \
                         order_by(DbCacheTransaction.block_height, DbCacheTransaction.order_n).all()
                     db_txs2 = []
                     for d in db_txs:
@@ -840,9 +841,9 @@ class Cache(object):
         """
         if not self.cache_enabled():
             return False
-        n_from = (page-1) * limit
+        n_from = (page - 1) * limit
         n_to = page * limit
-        db_txs = self.session.query(DbCacheTransaction).\
+        db_txs = self.session.query(DbCacheTransaction). \
             filter(DbCacheTransaction.block_height == height, DbCacheTransaction.order_n >= n_from,
                    DbCacheTransaction.order_n < n_to).all()
         txs = []
@@ -932,7 +933,7 @@ class Cache(object):
             varname = 'fee_medium'
         else:
             varname = 'fee_low'
-        dbvar = self.session.query(DbCacheVars).filter_by(varname=varname, network_name=self.network.name).\
+        dbvar = self.session.query(DbCacheVars).filter_by(varname=varname, network_name=self.network.name). \
             filter(DbCacheVars.expires > datetime.now()).scalar()
         if dbvar:
             return int(dbvar.value)
@@ -1014,7 +1015,7 @@ class Cache(object):
         if not self.cache_enabled():
             return
         # Only store complete and confirmed transaction in cache
-        if not t.txid:    # pragma: no cover
+        if not t.txid:  # pragma: no cover
             _logger.info("Caching failure tx: Missing transaction hash")
             return False
         elif not t.date or not t.block_height or not t.network:
@@ -1034,7 +1035,7 @@ class Cache(object):
                                     locktime=t.locktime, witness_type=t.witness_type)
         self.session.add(new_tx)
         for i in t.inputs:
-            if i.value is None or i.address is None or i.output_n is None:    # pragma: no cover
+            if i.value is None or i.address is None or i.output_n is None:  # pragma: no cover
                 _logger.info("Caching failure tx: Input value, address or output_n missing")
                 return False
             witnesses = int_to_varbyteint(len(i.witnesses)) + b''.join([bytes(varstr(w)) for w in i.witnesses])
@@ -1043,7 +1044,7 @@ class Cache(object):
                                               script=i.unlocking_script, sequence=i.sequence, witnesses=witnesses)
             self.session.add(new_node)
         for o in t.outputs:
-            if o.value is None or o.address is None or o.output_n is None:    # pragma: no cover
+            if o.value is None or o.address is None or o.output_n is None:  # pragma: no cover
                 _logger.info("Caching failure tx: Output value, address or output_n missing")
                 return False
             new_node = DbCacheTransactionNode(
@@ -1056,7 +1057,7 @@ class Cache(object):
             try:
                 self.commit()
                 _logger.info("Added transaction %s to cache" % t.txid)
-            except Exception as e:    # pragma: no cover
+            except Exception as e:  # pragma: no cover
                 _logger.warning("Caching failure tx: %s" % e)
 
     def store_utxo(self, txid, index_n, commit=True):
@@ -1077,12 +1078,12 @@ class Cache(object):
         txid = bytes.fromhex(txid)
         result = self.session.query(DbCacheTransactionNode). \
             filter(DbCacheTransactionNode.txid == txid, DbCacheTransactionNode.index_n == index_n,
-                   DbCacheTransactionNode.is_input == False).\
+                   DbCacheTransactionNode.is_input is False). \
             update({DbCacheTransactionNode.spent: False})
         if commit:
             try:
                 self.commit()
-            except Exception as e:    # pragma: no cover
+            except Exception as e:  # pragma: no cover
                 _logger.warning("Caching failure utxo %s:%d: %s" % (txid.hex(), index_n, e))
 
     def store_address(self, address, last_block=None, balance=0, n_utxos=None, txs_complete=False, last_txid=None):
@@ -1111,10 +1112,10 @@ class Cache(object):
             n_txs = len(self.session.query(DbCacheTransaction).join(DbCacheTransactionNode).
                         filter(DbCacheTransactionNode.address == address).all())
             if n_utxos is None:
-                n_utxos = self.session.query(DbCacheTransactionNode).\
+                n_utxos = self.session.query(DbCacheTransactionNode). \
                     filter(DbCacheTransactionNode.address == address, DbCacheTransactionNode.spent.is_(False),
                            DbCacheTransactionNode.is_input.is_(False)).count()
-                if self.session.query(DbCacheTransactionNode).\
+                if self.session.query(DbCacheTransactionNode). \
                         filter(DbCacheTransactionNode.address == address, DbCacheTransactionNode.spent.is_(None),
                                DbCacheTransactionNode.is_input.is_(False)).count():
                     n_utxos = None
@@ -1134,7 +1135,7 @@ class Cache(object):
         self.session.merge(new_address)
         try:
             self.commit()
-        except Exception as e:    # pragma: no cover
+        except Exception as e:  # pragma: no cover
             _logger.warning("Caching failure addr: %s" % e)
 
     def store_estimated_fee(self, blocks, fee):
@@ -1186,5 +1187,5 @@ class Cache(object):
         self.session.merge(new_block)
         try:
             self.commit()
-        except Exception as e:    # pragma: no cover
+        except Exception as e:  # pragma: no cover
             _logger.warning("Caching failure block: %s" % e)
